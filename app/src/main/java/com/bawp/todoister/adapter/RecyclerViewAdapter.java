@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bawp.todoister.R;
 import com.bawp.todoister.model.Task;
+import com.bawp.todoister.util.Utils;
 import com.google.android.material.chip.Chip;
 
 import java.util.List;
@@ -36,8 +37,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
             Task task = taskList.get(position);
+            String formatted = Utils.formatDate(task.getDueDate());
             holder.task.setText(task.getTask());
-
+            holder.chip.setText(formatted);
     }
 
     @Override
