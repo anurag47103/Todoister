@@ -26,7 +26,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import java.util.Calendar;
 import java.util.Date;
 
-public class BottomSheetFragment extends BottomSheetDialogFragment implements View.OnClickListener {
+public class BottomSheetFragment extends BottomSheetDialogFragment implements View.OnClickListener{
 
     private EditText enterTodo;
     private ImageButton priorityButton;
