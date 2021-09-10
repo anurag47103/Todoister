@@ -16,8 +16,10 @@ import com.bawp.todoister.model.Priority;
 import com.bawp.todoister.model.SharedViewModel;
 import com.bawp.todoister.model.Task;
 import com.bawp.todoister.model.TaskViewModel;
+import com.bawp.todoister.util.Utils;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
@@ -41,6 +43,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
     Calendar calendar = Calendar.getInstance();
     private SharedViewModel sharedViewModel;
     private boolean isEdit;
+    private Priority priority;
+
     public BottomSheetFragment() {
     }
 
@@ -93,6 +97,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
             calendarGroup.setVisibility(
                     calendarGroup.getVisibility() == View.GONE ? View.VISIBLE : View.GONE
             );
+            Utils.hideKeyboard(v);
         });
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
@@ -104,23 +109,60 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
             }
         });
 
+        priorityButton.setOnClickListener(v21 -> {
+//            Utils.hideKeyboard(v);
+            if(priorityRadioGroup.getVisibility() == View.GONE)
+                priorityRadioGroup.setVisibility(View.VISIBLE);
+            else
+                priorityRadioGroup.setVisibility(View.GONE);
+
+            priorityRadioGroup.setOnCheckedChangeListener((RadioGroup group, int checkedId) -> {
+
+                if(priorityRadioGroup.getVisibility() == View.VISIBLE) {
+                    selectedButtonId  = checkedId;
+                    selectedRadioButton = view.findViewById(selectedButtonId);
+
+                    if(selectedRadioButton.getId() == R.id.radioButton_high) {
+                        priority = Priority.HIGH;
+                    }
+                    else if(selectedRadioButton.getId() == R.id.radioButton_med) {
+                        priority = Priority.MEDIUM;
+                    }
+                    else if(selectedRadioButton.getId() == R.id.radioButton_low) {
+                        priority = Priority.LOW;
+                    }
+                }
+                else
+                    priority = Priority.HIGH;
+            });
+
+        });
+
         saveButton.setOnClickListener(v -> {
             String task = enterTodo.getText().toString().trim();
-            if(!TextUtils.isEmpty(task) && dueDate != null) {
-                Task mytask = new Task(task, Priority.HIGH, dueDate,
+            if(!TextUtils.isEmpty(task) && dueDate != null && priority != null) {
+                Task mytask = new Task(task, priority, dueDate,
                         Calendar.getInstance().getTime(), false);
 
                 if(isEdit) {
                     Task updateTask = sharedViewModel.getSelectedItem().getValue();
                     updateTask.setTask(task);
                     updateTask.setDateCreated(Calendar.getInstance().getTime());
-                    updateTask.setPriority(Priority.HIGH);
+                    updateTask.setPriority(priority);
                     updateTask.setDueDate(dueDate);
                     TaskViewModel.update(updateTask);
                     sharedViewModel.setEdit(false);
                 }
                 else
                     TaskViewModel.insert(mytask);
+
+                enterTodo.setText(null);
+                if(this.isVisible()) {
+                    this.dismiss();
+                }
+            }
+            else {
+                Snackbar.make(saveButton , R.string.empty_field , Snackbar.LENGTH_SHORT);
             }
         });
     }
