@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.bawp.todoister.model.Priority;
+import com.bawp.todoister.model.SharedViewModel;
 import com.bawp.todoister.model.Task;
 import com.bawp.todoister.model.TaskViewModel;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -20,8 +21,7 @@ import com.google.android.material.chip.Chip;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.Group;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,17 +39,17 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
     private Group calendarGroup;
     private Date dueDate;
     Calendar calendar = Calendar.getInstance();
-
+    private SharedViewModel sharedViewModel;
+    private boolean isEdit;
     public BottomSheetFragment() {
     }
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.bottom_sheet, container, false);
+
         calendarGroup = view.findViewById(R.id.calendar_group);
         calendarView = view.findViewById(R.id.calendar_view);
         saveButton = view.findViewById(R.id.save_todo_button);
@@ -68,8 +68,26 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(sharedViewModel.getSelectedItem().getValue() != null) {
+            isEdit = sharedViewModel.isEdit();
+            if(isEdit) {
+                Task task = sharedViewModel.getSelectedItem().getValue();
+                enterTodo.setText(task.getTask());
+                Log.d("shared", "onResume: " + task.getTask());
+            }
+            else {
+                enterTodo.setText(null);
+            }
+        }
+    }
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         calenderButton.setOnClickListener(v -> {
             calendarGroup.setVisibility(
@@ -91,7 +109,18 @@ public class BottomSheetFragment extends BottomSheetDialogFragment implements Vi
             if(!TextUtils.isEmpty(task) && dueDate != null) {
                 Task mytask = new Task(task, Priority.HIGH, dueDate,
                         Calendar.getInstance().getTime(), false);
-                TaskViewModel.insert(mytask);
+
+                if(isEdit) {
+                    Task updateTask = sharedViewModel.getSelectedItem().getValue();
+                    updateTask.setTask(task);
+                    updateTask.setDateCreated(Calendar.getInstance().getTime());
+                    updateTask.setPriority(Priority.HIGH);
+                    updateTask.setDueDate(dueDate);
+                    TaskViewModel.update(updateTask);
+                    sharedViewModel.setEdit(false);
+                }
+                else
+                    TaskViewModel.insert(mytask);
             }
         });
     }

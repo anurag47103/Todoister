@@ -20,6 +20,7 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final List<Task> taskList;
     private final OnTodoClickListener todoClickListener;
+
     public RecyclerViewAdapter(List<Task> taskList, OnTodoClickListener todoClickListener) {
         this.taskList = taskList;
         this.todoClickListener = todoClickListener;
@@ -72,7 +73,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             int id = v.getId();
             Task curr = taskList.get(getAdapterPosition());
             if(id == R.id.todo_row_layout) {
-                onTodoClickListener.onTodoClick(getAdapterPosition() , curr);
+                onTodoClickListener.onTodoClick(curr);
             }
             else if(id == R.id.todo_radio_button) {
                 onTodoClickListener.onTodoRadioButtonClick(curr);
