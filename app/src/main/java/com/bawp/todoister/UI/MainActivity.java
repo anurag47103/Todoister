@@ -1,7 +1,8 @@
-package com.bawp.todoister;
+package com.bawp.todoister.UI;
 
 import android.os.Bundle;
 
+import com.bawp.todoister.R;
 import com.bawp.todoister.adapter.OnTodoClickListener;
 import com.bawp.todoister.adapter.RecyclerViewAdapter;
 import com.bawp.todoister.model.SharedViewModel;
@@ -17,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 

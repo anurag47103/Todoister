@@ -1,8 +1,10 @@
-package com.bawp.todoister;
+package com.bawp.todoister.UI;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bawp.todoister.R;
 
 public class AboutActivity extends AppCompatActivity {
 

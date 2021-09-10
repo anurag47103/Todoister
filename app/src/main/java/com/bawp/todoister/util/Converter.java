@@ -19,12 +19,19 @@ public class Converter {
     }
 
     @TypeConverter
-    public static String priorityToString(Priority priority) {
-        return priority == null ? null : priority.name();
+    public static int priorityToString(Priority priority) {
+        if(priority == Priority.HIGH)
+            return 3;
+        else if(priority == Priority.MEDIUM)
+            return 2;
+        else
+            return 1;
     }
 
     @TypeConverter
-    public static Priority stringToPriority(String value) {
-        return value == null ? null : Priority.valueOf(value);
+    public static Priority stringToPriority(int value) {
+        if(value == 3) return Priority.HIGH;
+        else if(value == 2) return Priority.MEDIUM;
+        else return Priority.LOW;
     }
 }
